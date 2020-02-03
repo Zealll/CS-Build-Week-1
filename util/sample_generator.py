@@ -4,8 +4,10 @@
 # You can modify generate_rooms() to create your own
 # procedural generation algorithm and use print_rooms()
 # to see the world.
-
-
+import random
+n = open('./util/names.txt', 'r', encoding='utf-8')
+names = n.read().split("\n")
+n.close()
 class Room:
     def __init__(self, id, name, description, x, y):
         self.id = id
@@ -80,9 +82,12 @@ class World:
                 direction *= -1
 
             # Create a room in the given direction
-            room = Room(room_count, "A Generic Room", "This is a generic room.", x, y)
+            global names
+            global count_nums
+            random_name = random.choice(names)
+            room = Room(room_count, random_name, "This is a generic room.", x, y)
             # Note that in Django, you'll need to save the room after you create it
-
+            # self.save()
             # Save the room in the World grid
             self.grid[y][x] = room
 
@@ -111,6 +116,7 @@ class World:
         reverse_grid = list(self.grid) # make a copy of the list
         reverse_grid.reverse()
         for row in reverse_grid:
+            print(row)
             # PRINT NORTH CONNECTION ROW
             str += "#"
             for room in row:
