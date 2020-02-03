@@ -13,7 +13,7 @@ cache = {}
 
 for i in world.grid:
   for j in i:
-    room = Room(title = j.name, description = f'This room is called {j.name} with an id of {j.id}')
+    room = Room(title = j.name, description = f'This room is called {j.name} with an id of {j.id}', x = j.x, y = j.y)
     room.save()
     cache[(j.x, j.y)] = room
     if j.e_to != None:
