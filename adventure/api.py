@@ -20,7 +20,7 @@ def initialize(request):
     uuid = player.uuid
     room = player.room()
     players = room.playerNames(player_id)
-    return JsonResponse({'uuid': uuid, 'name':player.user.username, 'title':room.title, 'description':room.description, 'players':players}, safe=True)
+    return JsonResponse({'uuid': uuid, 'name':player.user.username, 'title':room.title, 'description':room.description, 'players':players, 'current_x': room.x, 'current_y': room.y}, safe=True)
 
 
 # @csrf_exempt
@@ -55,10 +55,10 @@ def move(request):
         #     pusher.trigger(f'p-channel-{p_uuid}', u'broadcast', {'message':f'{player.user.username} has walked {dirs[direction]}.'})
         # for p_uuid in nextPlayerUUIDs:
         #     pusher.trigger(f'p-channel-{p_uuid}', u'broadcast', {'message':f'{player.user.username} has entered from the {reverse_dirs[direction]}.'})
-        return JsonResponse({'name':player.user.username, 'title':nextRoom.title, 'description':nextRoom.description, 'players':players, 'error_msg':""}, safe=True)
+        return JsonResponse({'name':player.user.username, 'title':nextRoom.title, 'description':nextRoom.description, 'players':players, 'error_msg':"", 'current_x': room.x, 'current_y': room.y, 'next_room_x': nextRoom.x, 'next_room_y': nextRoom.y}, safe=True)
     else:
         players = room.playerNames(player_id)
-        return JsonResponse({'name':player.user.username, 'title':room.title, 'description':room.description, 'players':players, 'error_msg':"You cannot move that way."}, safe=True)
+        return JsonResponse({'name':player.user.username, 'title':room.title, 'description':room.description, 'players':players, 'error_msg':"You cannot move that way.", 'current_x': room.x, 'current_y': room.y, 'next_room_x': None, 'next_room_y': None}, safe=True)
 
 
 @csrf_exempt
@@ -75,6 +75,7 @@ def rooms(request):
     player = user.player
     player_id = player.id
     rooms = Room.objects.all()
+    print([i.__dict__ for i in rooms])
     return JsonResponse([{
         'room_id': room.id,
         'north': room.n_to != 0,
@@ -82,6 +83,8 @@ def rooms(request):
         'east': room.e_to != 0,
         'west': room.w_to != 0,
         'title': room.title,
+        'x_coordinate': room.x,
+        'y_coordinate': room.y,
         'description': room.description,
         'players': room.playerNames(player_id)
     } for  room in rooms], safe=False)
