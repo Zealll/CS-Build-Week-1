@@ -55,10 +55,10 @@ def move(request):
         #     pusher.trigger(f'p-channel-{p_uuid}', u'broadcast', {'message':f'{player.user.username} has walked {dirs[direction]}.'})
         # for p_uuid in nextPlayerUUIDs:
         #     pusher.trigger(f'p-channel-{p_uuid}', u'broadcast', {'message':f'{player.user.username} has entered from the {reverse_dirs[direction]}.'})
-        return JsonResponse({'name':player.user.username, 'title':nextRoom.title, 'description':nextRoom.description, 'players':players, 'error_msg':"", 'current_x': room.x, 'current_y': room.y, 'next_room_x': nextRoom.x, 'next_room_y': nextRoom.y}, safe=True)
+        return JsonResponse({'name':player.user.username, 'title':nextRoom.title, 'description':nextRoom.description, 'players':players, 'error_msg':"", 'current_x': room.x, 'current_y': room.y, 'next_room_x': nextRoom.x, 'next_room_y': nextRoom.y, 'room_id': nextRoomID}, safe=True)
     else:
         players = room.playerNames(player_id)
-        return JsonResponse({'name':player.user.username, 'title':room.title, 'description':room.description, 'players':players, 'error_msg':"You cannot move that way.", 'current_x': room.x, 'current_y': room.y, 'next_room_x': None, 'next_room_y': None}, safe=True)
+        return JsonResponse({'name':player.user.username, 'title':room.title, 'description':room.description, 'players':players, 'error_msg':"You cannot move that way.", 'current_x': room.x, 'current_y': room.y, 'next_room_x': None, 'next_room_y': None, 'room_id': room.id}, safe=True)
 
 
 @csrf_exempt
