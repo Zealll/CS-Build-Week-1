@@ -26,6 +26,7 @@ def initialize(request):
 # @csrf_exempt
 @api_view(["POST"])
 def move(request):
+    print(request)
     dirs={"n": "north", "s": "south", "e": "east", "w": "west"}
     reverse_dirs = {"n": "south", "s": "north", "e": "west", "w": "east"}
     player = request.user.player
@@ -65,3 +66,23 @@ def move(request):
 def say(request):
     # IMPLEMENT
     return JsonResponse({'error':"Not yet implemented"}, safe=True, status=500)
+
+
+@csrf_exempt
+@api_view(["GET"])
+def rooms(request):
+    user = request.user
+    player = user.player
+    player_id = player.id
+    rooms = Room.objects.all()
+    return JsonResponse([{
+        'room_id': room.id,
+        'north': room.n_to != 0,
+        'south': room.s_to != 0,
+        'east': room.e_to != 0,
+        'west': room.w_to != 0,
+        'title': room.title,
+        'description': room.description,
+        'players': room.playerNames(player_id)
+    } for  room in rooms], safe=False)
+    
