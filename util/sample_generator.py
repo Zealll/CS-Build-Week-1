@@ -68,6 +68,9 @@ def branch_rooms(grid,
     # adds possible locations to a list
     possible_next = [north, east, south, west]
 
+    # brings in global variable for list of names
+    global names
+
     for room in possible_next:
         # passes if room is out of bounds
         if (room[0] < 0) or (room[1] < 0) or (room[0] > max_width - 1) or (room[1] > max_height - 1):  # noqa
@@ -83,9 +86,10 @@ def branch_rooms(grid,
                 pass
             else:
                 current_rooms += 1
+                name = random.choice(names)
                 new_room = Room(current_rooms,
-                                'room',
-                                'a room',
+                                f'{name}',
+                                f'Just a generic room named {name}',
                                 room[0],
                                 room[1]
                                 )
