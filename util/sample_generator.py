@@ -8,6 +8,8 @@ import random
 n = open('./util/names.txt', 'r', encoding='utf-8')
 names = n.read().split("\n")
 n.close()
+
+
 class Room:
     def __init__(self, id, name, description, x, y):
         self.id = id
@@ -38,12 +40,68 @@ class Room:
         return getattr(self, f"{direction}_to")
 
 
+# definesa helper function for use in generating rooms
+def branch_rooms(grid,
+                 current_location,
+                 current_room,
+                 current_rooms,
+                 max_rooms,
+                 max_width,
+                 max_height,
+                 branch_from
+                 ):
+
+    # gets coordinates for possible next locations from current room
+    north = current_location.copy()
+    north[1] += 1
+    north += ['n']
+    east = current_location.copy()
+    east[0] += 1
+    east += ['e']
+    south = current_location.copy()
+    south[1] -= 1
+    south += ['s']
+    west = current_location.copy()
+    west[0] -= 1
+    west += ['w']
+
+    # adds possible locations to a list
+    possible_next = [north, east, south, west]
+
+    for room in possible_next:
+        # passes if room is out of bounds
+        if (room[0] < 0) or (room[1] < 0) or (room[0] > max_width - 1) or (room[1] > max_height - 1):  # noqa
+            pass
+
+        # passes if room already exists in grid
+        elif grid[room[0]][room[1]] is not None:
+            pass
+
+        # creates new room at given location otherwise
+        else:
+            if current_rooms == max_rooms:
+                pass
+            else:
+                current_rooms += 1
+                new_room = Room(current_rooms,
+                                'room',
+                                'a room',
+                                room[0],
+                                room[1]
+                                )
+                current_room.connect_rooms(new_room, room[2])
+                grid[room[0]][room[1]] = new_room
+                branch_from.append(new_room)
+
+    return(grid, current_rooms, branch_from)
+
+
 class World:
     def __init__(self):
         self.grid = None
         self.width = 0
         self.height = 0
-    def generate_rooms(self, size_x, size_y, num_rooms):
+    def generate_zigzag(self, size_x, size_y, num_rooms):
         '''
         Fill up the grid, bottom to top, in a zig-zag pattern
         '''
@@ -99,6 +157,39 @@ class World:
             previous_room = room
             room_count += 1
 
+    def generate_rooms(self, width, height, num_rooms):
+        # sets grid and size
+        self.grid = [None] * width
+        self.width = width
+        self.height = height
+        for i in range(len(self.grid)):
+            self.grid[i] = [None] * height
+
+        # creates the starting room at bottom left
+        start_room = Room(1, 'START ROOM', "This is the starting room", 0, 0)
+        self.grid[0][0] = start_room
+        current_rooms = 1
+        current_location = [0, 0]
+
+        current_room = start_room
+        max_rooms = 529
+        branch_from = []
+
+        while current_rooms < max_rooms:
+
+            self.grid, current_rooms, branch_from = branch_rooms(self.grid,
+                                                                 current_location,  # noqa
+                                                                 current_room,
+                                                                 current_rooms,
+                                                                 max_rooms,
+                                                                 self.width,
+                                                                 self.height,
+                                                                 branch_from)
+            if branch_from:
+                current_room = branch_from.pop(0)
+                current_location = [current_room.x, current_room.y]
+            else:
+                break
 
 
     def print_rooms(self):
@@ -165,4 +256,4 @@ w.generate_rooms(width, height, num_rooms)
 w.print_rooms()
 
 
-print(f"\n\nWorld\n  height: {height}\n  width: {width},\n  num_rooms: {num_rooms}\n")
+print(f"\n\nWorld\n  height: {height}\n  width: {width},\n  num_rooms: {num_rooms}\n")  # noqa
