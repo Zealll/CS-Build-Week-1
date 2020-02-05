@@ -12,6 +12,8 @@ class Room(models.Model):
     s_to = models.IntegerField(default=0)
     e_to = models.IntegerField(default=0)
     w_to = models.IntegerField(default=0)
+    x = models.IntegerField(default=0)
+    y = models.IntegerField(default=0)
     
     def connectRooms(self, destinationRoom, direction):
         destinationRoomID = destinationRoom.id
@@ -22,12 +24,16 @@ class Room(models.Model):
         else:
             if direction == "n":
                 self.n_to = destinationRoomID
+                self.next_room_id_n = destinationRoomID
             elif direction == "s":
                 self.s_to = destinationRoomID
+                self.next_room_id_s = destinationRoomID
             elif direction == "e":
                 self.e_to = destinationRoomID
+                self.next_room_id_e = destinationRoomID
             elif direction == "w":
                 self.w_to = destinationRoomID
+                self.next_room_id_w = destinationRoomID
             else:
                 print("Invalid direction")
                 return
